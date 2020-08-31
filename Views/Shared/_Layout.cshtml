@@ -1,0 +1,19 @@
+@using React.AspNet
+<!DOCTYPE html>
+<html>
+<head>
+	@Html.Raw(ViewBag.HelmetTitle)
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/fonts/source-sans-pro.css">
+	<link rel="stylesheet" href="~/css/app.css">
+	@Html.Raw(ViewBag.ServerStyles)
+	@Html.ReactGetStylePaths()
+</head>
+<body>
+	@RenderBody()
+	@Html.ReactGetScriptPaths()
+	@Html.ReactInitJavaScript()
+	<script src="~/lib/vizceral/vizceral.min.js"></script>
+</body>
+</html>
