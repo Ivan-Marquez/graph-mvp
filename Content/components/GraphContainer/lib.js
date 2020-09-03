@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import queryString from "query-string";
+import keypress from "keypress.js";
 import _ from "lodash";
 import data from "./mockData";
 
@@ -21,6 +22,7 @@ function checkInitialRoute(props) {
 
 export function useGraphContainer(props) {
   // State
+  const [listener] = useState(new keypress.Listener());
   const [styles, setStyles] = useState({});
   const [filters, setFilters] = useState([]);
   const [definitions, setDefinitions] = useState({});
@@ -69,16 +71,10 @@ export function useGraphContainer(props) {
 
   const setKeypressListener = function setKeypressListener() {
     if (!_.isEmpty(currentView)) {
-      const listener = new window.keypress.Listener();
-
       listener.simple_combo("esc", () => {
         setModes({ detailedNode: undefined });
         setCurrentView([]);
       });
-
-      return function disposeKeypressListener() {
-        listener.destroy();
-      };
     }
   };
 
