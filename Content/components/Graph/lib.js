@@ -83,6 +83,8 @@ export function useGraph(canvasRef, props) {
 
       graph.setView(view, objectToHighlight);
       graph.updateData(traffic);
+
+      canvasRef.current.height = window.innerHeight - 100;
     }
   };
 

@@ -42,10 +42,6 @@ function Graph(props = defaultProps) {
   const canvasRef = useRef();
   useGraph(canvasRef, props);
 
-  useEffect(function resetCanvasHeight() {
-    canvasRef.current.height = window.innerHeight - 100;
-  });
-
   return (
     <div className={vizceral}>
       <canvas style={{ width: "100%", height: "100%" }} ref={canvasRef} />
