@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Vizceral from "vizceral";
 import _ from "lodash";
 
 export function getPerformanceNow() {
@@ -34,9 +35,7 @@ export function useGraph(canvasRef, props) {
 
   // Side Effects
   const initializeGraph = function initializeGraph() {
-    setGraph(new window.Vizceral.default(canvasRef.current));
-    // TODO: Temporary code to handle graph from dev tools. Remove after testing.
-    window.graph = graph;
+    setGraph(new Vizceral(canvasRef.current), props.targetFramerate);
   };
 
   const registerGraphEvents = function registerGraphEvents() {
