@@ -1,65 +1,58 @@
 import React, { useRef, useEffect } from "react";
-import styled from "styled-components";
-import { useGraph } from "./lib";
+import { css } from "emotion";
+import { useGraph, defaultProps } from "./lib";
 import PropTypes from "prop-types";
 
-export const GraphContext = React.createContext({});
+const vizceral = css`
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+`;
 
-function Graph(props = defaultProps) {
-  const canvas = useRef();
-  let graph = useGraph(canvas, props);
+const vizceralNotice = css`
+  display: block;
+  position: absolute;
+  padding: 0 3px;
+  width: 200px;
 
-  useEffect(function () {
-    canvas.current.height = window.innerHeight - 100;
-  });
+  background-color: black;
+  border-left: 2px solid grey;
 
-  return (
-    <GraphContext.Provider value={graph}>
-      <div className="vizceral">
-        <canvas style={{ width: "100%", height: "100%" }} ref={canvas} />
-        <div className="vizceral-notice"></div>
-      </div>
-    </GraphContext.Provider>
-  );
-}
+  font-size: 11px;
+  color: grey;
 
-const StyledGraph = styled(Graph)`
-  .vizceral {
-    display: block;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-  }
-
-  .vizceral .vizceral-notice {
-    display: block;
-    position: absolute;
-    padding: 0 3px;
-    width: 200px;
-
-    background-color: black;
-    border-left: 2px solid grey;
-
-    font-size: 11px;
-    color: grey;
-  }
-
-  .vizceral .vizceral-notice ul {
+  ul {
     list-style: none;
     padding: 0;
     margin: 0;
   }
 
-  .vizceral .vizceral-notice > ul > li {
+  ul > li {
     line-height: 12px;
     padding-top: 3px;
     padding-bottom: 3px;
   }
 
-  .vizceral .vizceral-notice .subtitle {
+  .subtitle {
     font-weight: 900;
   }
 `;
+
+function Graph(props = defaultProps) {
+  const canvasRef = useRef();
+  useGraph(canvasRef, props);
+
+  useEffect(function resetCanvasHeight() {
+    canvasRef.current.height = window.innerHeight - 100;
+  });
+
+  return (
+    <div className={vizceral}>
+      <canvas style={{ width: "100%", height: "100%" }} ref={canvasRef} />
+      <div className={vizceralNotice}></div>
+    </div>
+  );
+}
 
 Graph.propTypes = {
   /**
@@ -124,6 +117,10 @@ Graph.propTypes = {
    * Target framerate for rendering engine
    */
   targetFramerate: PropTypes.number,
+  /**
+   * View to render
+   */
+  view: PropTypes.array,
 };
 
-export default StyledGraph;
+export default Graph;

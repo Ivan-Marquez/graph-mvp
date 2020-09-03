@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import _ from "lodash";
 
 export function getPerformanceNow() {
   const g = window;
@@ -18,28 +19,6 @@ export function getPerformanceNow() {
   return null;
 }
 
-export const defaultProps = {
-  connectionHighlighted: () => {},
-  definitions: {},
-  filters: [],
-  match: "",
-  nodeHighlighted: () => {},
-  nodeUpdated: () => {},
-  nodeContextSizeChanged: () => {},
-  matchesFound: () => {},
-  objectHighlighted: () => {},
-  objectHovered: () => {},
-  objectToHighlight: null,
-  showLabels: true,
-  allowDraggingOfNodes: true,
-  styles: {},
-  traffic: {},
-  viewChanged: () => {},
-  viewUpdated: () => {},
-  view: [],
-  targetFramerate: null,
-};
-
 function updateStyles(graph, styles) {
   const styleNames = graph.getStyles();
   const customStyles = styleNames.reduce((result, styleName) => {
@@ -50,70 +29,66 @@ function updateStyles(graph, styles) {
   return graph.updateStyles(customStyles);
 }
 
-export function useGraph(canvas, props) {
-  let graph;
+export function useGraph(canvasRef, props) {
+  const [graph, setGraph] = useState({});
 
-  useEffect(function () {
-    const targetFramerate = props.targetFramerate || defaultProps.targetFramerate;
-    const viewChanged = props.viewChanged || defaultProps.viewChanged;
-    const objectHighlighted = props.objectHighlighted || defaultProps.objectHighlighted;
-    const objectHovered = props.objectHovered || defaultProps.objectHovered;
-    const nodeUpdated = props.nodeUpdated || defaultProps.nodeUpdated;
-    const nodeContextSizeChanged = props.nodeContextSizeChanged || defaultProps.nodeContextSizeChanged;
-    const matchesFound = props.matchesFound || defaultProps.matchesFound;
-    const viewUpdated = props.viewUpdated || defaultProps.viewUpdated;
+  // Side Effects
+  const initializeGraph = function initializeGraph() {
+    setGraph(new window.Vizceral.default(canvasRef.current));
+    // TODO: Temporary code to handle graph from dev tools. Remove after testing.
+    window.graph = graph;
+  };
 
-    graph = new window.Vizceral.default(canvas.current, targetFramerate);
+  const registerGraphEvents = function registerGraphEvents() {
+    if (!_.isEmpty(graph)) {
+      const voidF = function () {};
 
-    graph.on("viewChanged", viewChanged);
-    graph.on("objectHighlighted", objectHighlighted);
-    graph.on("objectHovered", objectHovered);
-    graph.on("nodeUpdated", nodeUpdated);
-    graph.on("nodeContextSizeChanged", nodeContextSizeChanged);
-    graph.on("matchesFound", matchesFound);
-    graph.on("viewUpdated", viewUpdated);
+      graph.on("viewChanged", props.viewChanged || voidF);
+      graph.on("objectHighlighted", props.objectHighlighted || voidF);
+      graph.on("objectHovered", props.objectHovered || voidF);
+      graph.on("nodeUpdated", props.nodeUpdated || voidF);
+      graph.on("nodeContextSizeChanged", props.nodeContextSizeChanged || voidF);
+      graph.on("matchesFound", props.matchesFound || voidF);
+      graph.on("viewUpdated", props.viewUpdated || voidF);
 
-    return () => {
-      graph.removeAllListeners();
-    };
-  }, []);
+      return () => {
+        graph.removeAllListeners();
+      };
+    }
+  };
 
-  useEffect(
-    function () {
-      const showLabels = props.showshowLabels || defaultProps.showLabels;
-      const allowDraggingOfNodes = props.allowDraggingOfNodes || defaultProps.allowDraggingOfNodes;
-      const styles = props.styles || defaultProps.styles;
-      const filters = props.filters || defaultProps.filters;
-      const definitions = props.definitions || defaultProps.definitions;
+  const setGraphConfig = function setGraphConfig() {
+    if (!_.isEmpty(graph)) {
+      const showLabels = props.showshowLabels || true;
+      const allowDraggingOfNodes = props.allowDraggingOfNodes || true;
+      const styles = props.styles || {};
+      const filters = props.filters || [];
+      const definitions = props.definitions || {};
+      const perfNow = getPerformanceNow();
 
       updateStyles(graph, styles);
       graph.setOptions({ showLabels, allowDraggingOfNodes });
       graph.setFilters(filters);
       graph.updateDefinitions(definitions);
-    },
-    [props.options, props.styles, props.filters, props.definitions]
-  );
-
-  useEffect(function () {
-    const view = props.view || defaultProps.view;
-    const objectToHighlight = props.objectToHighlight || defaultProps.objectToHighlight;
-    const traffic = props.traffic || defaultProps.traffic;
-
-    const timer = window.setTimeout(() => {
-      graph.setView(view, objectToHighlight);
-      graph.updateData(traffic);
-
-      const perfNow = getPerformanceNow();
 
       graph.animate(perfNow === null ? 0 : perfNow);
       graph.updateBoundingRectCache();
-    }, 0);
+    }
+  };
 
-    // TODO: Temporary code to handle graph from dev tools. Remove after testing.
-    window.graph = graph;
+  const setGraphView = function setGraphView() {
+    if (!_.isEmpty(graph)) {
+      const view = props.view || [];
+      const objectToHighlight = props.objectToHighlight || null;
+      const traffic = props.traffic || {};
 
-    return () => window.clearTimeout(timer);
-  });
+      graph.setView(view, objectToHighlight);
+      graph.updateData(traffic);
+    }
+  };
 
-  return graph;
+  useEffect(initializeGraph, []);
+  useEffect(registerGraphEvents, [graph]);
+  useEffect(setGraphConfig, [graph]);
+  useEffect(setGraphView, [graph, props.view]);
 }
