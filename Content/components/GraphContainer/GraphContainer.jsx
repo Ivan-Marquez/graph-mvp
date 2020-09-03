@@ -92,6 +92,7 @@ function GraphContainer(props) {
           view={state.currentView}
           viewChanged={viewChanged}
           allowDraggingOfNodes={displayOptions.allowDraggingOfNodes}
+          targetFramerate={state.targetFramerate}
           objectToHighlight={state.objectToHighlight}
           objectHighlighted={objectHighlighted}
           showLabels={displayOptions.showLabels}

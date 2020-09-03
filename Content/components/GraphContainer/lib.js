@@ -33,6 +33,7 @@ export function useGraphContainer(props) {
   const [highlightedObject, setHighlightedObject] = useState({});
   const [matches, setMatches] = useState({ total: 0, visible: 0 });
   const [modes, setModes] = useState({ detailedNode: "volume" });
+  const [targetFramerate, setTargetFramerate] = useState(null);
   const [displayOptions, setDisplayOptions] = useState({ allowDraggingOfNodes: true, showLabels: true });
 
   // TODO: replace with commented code once API call is in place
@@ -114,6 +115,8 @@ export function useGraphContainer(props) {
     setTrafficData,
     highlightedObject,
     setHighlightedObject,
+    targetFramerate,
+    setTargetFramerate,
   };
 
   return state;
