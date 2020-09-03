@@ -1,12 +1,7 @@
 import { Component, Fragment } from "react";
-import GraphContainer from "./GraphContainer/GraphContainer.jsx";
-import {
-  BrowserRouter,
-  Route,
-  Switch,
-  StaticRouter,
-  Redirect,
-} from "react-router-dom";
+import loadable from "@loadable/component";
+import { BrowserRouter, Route, Switch, StaticRouter } from "react-router-dom";
+const GraphContainer = loadable(() => import("./GraphContainer/GraphContainer.jsx"));
 
 class MainComponent extends Component {
   render() {
@@ -17,15 +12,7 @@ class MainComponent extends Component {
         </Helmet>
         <div className="vizceral-container">
           <Switch>
-            <Route exact path="/" render={() => <Redirect to="/graph" />} />
-            <Route path="/graph" component={GraphContainer} />
-            <Route
-              path="*"
-              component={({ staticContext }) => {
-                if (staticContext) staticContext.status = 404;
-                return <h1>Not Found :(</h1>;
-              }}
-            />
+            <Route path="*" component={GraphContainer} />
           </Switch>
         </div>
       </Fragment>
@@ -33,10 +20,7 @@ class MainComponent extends Component {
 
     if (typeof window === "undefined") {
       return (
-        <StaticRouter
-          context={this.props.context}
-          location={this.props.location}
-        >
+        <StaticRouter context={this.props.context} location={this.props.location}>
           {app}
         </StaticRouter>
       );
