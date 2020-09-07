@@ -48,31 +48,6 @@ function GraphContainer(props) {
     state.setRedirectFrom(undefined);
   }
 
-  function zoomCallback() {
-    let currentView = state.currentView.slice();
-
-    if (state.highlightedObject) {
-      currentView.push(state.highlightedObject.name);
-      state.setObjectToHighlight(undefined);
-    } else if (state.currentView.length > 0) {
-      const nodeName = currentView.pop();
-
-      state.setObjectToHighlight(nodeName);
-    }
-
-    this.setState(newState);
-  }
-
-  function nodeClicked(node) {
-    if (state.currentView.length === 1) {
-      // highlight node
-      setObjectToHighlight({ objectToHighlight: node.getName() });
-    } else if (state.currentView.length === 2) {
-      // detailed view of node
-      setCurrentView([state.currentView[0], node.getName()]);
-    }
-  }
-
   const { displayOptions } = state;
 
   return (
