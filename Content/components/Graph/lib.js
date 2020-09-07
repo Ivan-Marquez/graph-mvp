@@ -104,5 +104,5 @@ export function useGraph(canvasRef, props) {
   useEffect(initializeGraph, []);
   useEffect(registerGraphEvents, [graph]);
   useEffect(setGraphConfig, [graph]);
-  useEffect(setGraphView, [graph, props.view]);
+  useEffect(setGraphView, [graph, props.traffic, props.view]);
 }

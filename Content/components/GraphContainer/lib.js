@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import queryString from "query-string";
 import keypress from "keypress.js";
 import _ from "lodash";
-import data from "./mockData";
 
 function checkInitialRoute(props) {
   // Check the location bar for any direct routing information
@@ -22,7 +21,6 @@ function checkInitialRoute(props) {
 
 export function useGraphContainer(props) {
   // State
-  const [listener] = useState(new keypress.Listener());
   const [styles, setStyles] = useState({});
   const [filters, setFilters] = useState([]);
   const [definitions, setDefinitions] = useState({});
@@ -37,19 +35,24 @@ export function useGraphContainer(props) {
   const [modes, setModes] = useState({ detailedNode: "volume" });
   const [targetFramerate, setTargetFramerate] = useState(null);
   const [displayOptions, setDisplayOptions] = useState({ allowDraggingOfNodes: true, showLabels: true });
+  const [trafficData, setTrafficData] = useState({});
 
-  // TODO: replace with commented code once API call is in place
-  const [trafficData, setTrafficData] = useState(data);
-  // const [trafficData, setTrafficData] = useState({
-  //   name: "",
-  //   renderer: "global",
-  //   nodes: [],
-  //   connections: [],
-  // });
+  const source = new EventSource("/api/graph");
+  const listener = new keypress.Listener();
 
   // Side Effects
   const initialize = function initialize() {
     const { views, parsedQuery } = checkInitialRoute(props);
+
+    source.onmessage = (evt) => {
+      const stream = JSON.parse(evt.data);
+      setTrafficData(stream);
+    };
+
+    source.onerror = (evt) => {
+      console.log("error:", evt);
+      source.close();
+    };
 
     setObjectToHighlight(parsedQuery.highlighted);
     setCurrentView(views);
