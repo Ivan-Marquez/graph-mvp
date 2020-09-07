@@ -3,6 +3,7 @@ import { injectGlobal } from "emotion";
 import { useGraphContainer } from "./lib";
 import Breadcrumbs from "../Breadcrumbs/Breadcrumbs.jsx";
 import Graph from "../Graph/Graph.jsx";
+import _ from "lodash";
 
 injectGlobal`
   .selected-formatted-date-time,

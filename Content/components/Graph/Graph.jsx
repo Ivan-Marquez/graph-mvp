@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import { css } from "emotion";
 import { useGraph, defaultProps } from "./lib";
 import PropTypes from "prop-types";
