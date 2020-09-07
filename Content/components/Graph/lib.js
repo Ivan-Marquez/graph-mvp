@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import WebFont from "webfontloader";
 import Vizceral from "vizceral";
 import _ from "lodash";
 
@@ -30,6 +31,16 @@ function updateStyles(graph, styles) {
   return graph.updateStyles(customStyles);
 }
 
+// TODO: fonts are not loading on page load.
+function loadFonts() {
+  return WebFont.load({
+    custom: {
+      families: ["Source Sans Pro:n3,n4,n6,n7"],
+      urls: ["/fonts/source-sans-pro.css"],
+    },
+  });
+}
+
 export function useGraph(canvasRef, props) {
   const [graph, setGraph] = useState({});
 
@@ -40,6 +51,8 @@ export function useGraph(canvasRef, props) {
 
   const registerGraphEvents = function registerGraphEvents() {
     if (!_.isEmpty(graph)) {
+      loadFonts();
+
       const voidF = function () {};
 
       graph.on("viewChanged", props.viewChanged || voidF);
